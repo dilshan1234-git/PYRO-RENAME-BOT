@@ -1,3 +1,5 @@
+import os
+import time
 from datetime import datetime
 from pytz import timezone
 from pyrogram import Client, __version__
@@ -5,6 +7,14 @@ from pyrogram.raw.all import layer
 from config import Config
 from aiohttp import web
 from route import web_server
+
+# Function to check and synchronize time (for Unix-like systems)
+def synchronize_time():
+    try:
+        os.system('sudo timedatectl set-ntp true')
+        print("System time synchronized with NTP.")
+    except Exception as e:
+        print(f"Failed to synchronize time: {e}")
 
 class Bot(Client):
 
@@ -29,17 +39,20 @@ class Bot(Client):
             app = web.AppRunner(await web_server())
             await app.setup()       
             await web.TCPSite(app, "0.0.0.0", 8080).start()     
-        print(f"{me.first_name} Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️")
+        print(f"{me.first_name} is started.....✨")
         for id in Config.ADMIN:
-            try: await self.send_message(id, f"**__{me.first_name}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️__**")                                
+            try: await self.send_message(id, f"**__{me.first_name} is started.....✨__**")                                
             except: pass
         if Config.LOG_CHANNEL:
             try:
                 curr = datetime.now(timezone("Asia/Kolkata"))
                 date = curr.strftime('%d %B, %Y')
                 time = curr.strftime('%I:%M:%S %p')
-                await self.send_message(Config.LOG_CHANNEL, f"**__{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!**\n\n📅 Dᴀᴛᴇ : `{date}`\n⏰ Tɪᴍᴇ : `{time}`\n🌐 Tɪᴍᴇᴢᴏɴᴇ : `Asia/Kolkata`\n\n🉐 Vᴇʀsɪᴏɴ : `v{__version__} (Layer {layer})`</b>")                                
+                await self.send_message(Config.LOG_CHANNEL, f"**__{me.mention} is restarted !!**\n\n📅 Date : `{date}`\n⏰ Time : `{time}`\n🌐 Timezone : `Asia/Kolkata`\n\n🉐 Version : `v{__version__} (Layer {layer})`")                                
             except:
-                print("Pʟᴇᴀꜱᴇ Mᴀᴋᴇ Tʜɪꜱ Iꜱ Aᴅᴍɪɴ Iɴ Yᴏᴜʀ Lᴏɢ Cʜᴀɴɴᴇʟ")
+                print("Please make this bot an admin in your log channel")
 
-Bot().run()
+if __name__ == "__main__":
+    # Synchronize time before starting the bot
+    synchronize_time()
+    Bot().run()
